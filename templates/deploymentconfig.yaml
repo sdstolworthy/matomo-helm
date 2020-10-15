@@ -19,6 +19,26 @@ spec:
     spec:
       containers:
         - image: matomo
+          env:
+            - name: MATOMO_DATABASE_HOST
+              value: "{{ .Values.name }}-mysql"
+            - name: MATOMO_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: MYSQL_PASSWORD
+                  name: "{{ .Values.name }}-configuration"
+            - name: MATOMO_DATABASE_DBNAME
+              valueFrom:
+                secretKeyRef:
+                  key: MYSQL_DATABASE
+                  name: "{{ .Values.name }}-configuration"
+            - name: MATOMO_DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: MYSQL_USER
+                  name: "{{ .Values.name }}-configuration"
+            - name: MATOMO_DATABASE_TABLES_PREFIX
+              value: matomo_
           imagePullPolicy: Always
           name: matomo
           ports:
@@ -27,11 +47,12 @@ spec:
           resources:
             limits:
               memory: 512Mi
-          securityContext:
-            privileged: false
+          securityContext: {}
           volumeMounts:
             - mountPath: /var/www/html
               name: "{{ .Values.name }}-data"
+      serviceAccount: matomo-runner
+      serviceAccountName: matomo-runner
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       volumes:

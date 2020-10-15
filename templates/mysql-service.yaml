@@ -6,7 +6,7 @@ metadata:
   name: "{{ .Values.name }}-mysql"
 spec:
   ports:
-    - name: mongo
+    - name: mysql
       nodePort: 0
       port: 3306
       protocol: TCP
