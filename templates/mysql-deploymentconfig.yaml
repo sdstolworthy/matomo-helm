@@ -1,0 +1,62 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: "{{ .Values.name }}"
+  name: "{{ .Values.name }}-mysql"
+spec:
+  replicas: 1
+  selector:
+    app: "{{ .Values.name }}-mysql"
+    deploymentconfig: "{{ .Values.name }}-mysql"
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: "{{ .Values.name }}-mysql"
+        deploymentconfig: "{{ .Values.name }}-mysql"
+    spec:
+      containers:
+        - env:
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  key: MYSQL_USER
+                  name: "{{ .Values.name }}-configuration"
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: MYSQL_PASSWORD
+                  name: "{{ .Values.name }}-configuration"
+            - name: MYSQL_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: MYSQL_ROOT_PASSWORD
+                  name: "{{ .Values.name }}-configuration"
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  key: MYSQL_DATABASE
+                  name: "{{ .Values.name }}-configuration"
+          image: " "
+          imagePullPolicy: IfNotPresent
+          name: mysql
+          ports:
+            - containerPort: 3306
+              protocol: TCP
+          resources:
+            limits:
+              memory: 512Mi
+          securityContext:
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: "{{ .Values.name }}-data"
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      volumes:
+        - name: "{{ .Values.name }}-data"
+          persistentVolumeClaim:
+            claimName: "{{ .Values.name }}-mysql"

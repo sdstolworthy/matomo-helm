@@ -1,0 +1,34 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: "{{ .Values.name }}"
+  name: "{{ .Values.name }}-matomo"
+spec:
+  replicas: 1
+  selector:
+    app: "{{ .Values.name }}-matomo"
+    deploymentconfig: "{{ .Values.name }}-matomo"
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: "{{ .Values.name }}-matomo"
+        deploymentconfig: "{{ .Values.name }}-matomo"
+    spec:
+      containers:
+        - image: matomo
+          imagePullPolicy: Always
+          name: matomo
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            limits:
+              memory: 512Mi
+          securityContext:
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always

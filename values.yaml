@@ -1,0 +1,13 @@
+name: matomo
+
+servicePort: 80
+
+imageName: "matomo"
+imageTag: "latest"
+
+development: true
+
+mysqlDatabase: matomo
+mysqlRootPassword: rootpassword
+mysqlUser: mysqluser
+mysqlPassword: mysqlpassword
