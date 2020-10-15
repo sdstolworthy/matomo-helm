@@ -3,19 +3,19 @@ kind: DeploymentConfig
 metadata:
   labels:
     app: "{{ .Values.name }}"
-  name: "{{ .Values.name }}-matomo"
+  name: "{{ .Values.name }}"
 spec:
   replicas: 1
   selector:
-    app: "{{ .Values.name }}-matomo"
-    deploymentconfig: "{{ .Values.name }}-matomo"
+    app: "{{ .Values.name }}"
+    deploymentconfig: "{{ .Values.name }}"
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: "{{ .Values.name }}-matomo"
-        deploymentconfig: "{{ .Values.name }}-matomo"
+        app: "{{ .Values.name }}"
+        deploymentconfig: "{{ .Values.name }}"
     spec:
       containers:
         - image: matomo
@@ -29,6 +29,12 @@ spec:
               memory: 512Mi
           securityContext:
             privileged: false
-          terminationMessagePath: /dev/termination-log
+          volumeMounts:
+            - mountPath: /var/www/html
+              name: "{{ .Values.name }}-data"
       dnsPolicy: ClusterFirst
       restartPolicy: Always
+      volumes:
+        - name: "{{ .Values.name }}-data"
+          persistentVolumeClaim:
+            claimName: "{{ .Values.name }}"

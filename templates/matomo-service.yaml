@@ -3,7 +3,7 @@ kind: Service
 metadata:
   labels:
     app: "{{ .Values.name }}"
-  name: "{{ .Values.name }}-matomo"
+  name: "{{ .Values.name }}"
 spec:
   ports:
     - name: matomo
@@ -12,8 +12,8 @@ spec:
       protocol: TCP
       targetPort: 80
   selector:
-    app: "{{ .Values.name }}-matomo"
-    deploymentconfig: "{{ .Values.name }}-matomo"
+    app: "{{ .Values.name }}"
+    deploymentconfig: "{{ .Values.name }}"
   sessionAffinity: None
   type: ClusterIP
 status:
